@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suara Merdeka - Game Edukasi Pendidikan Pancasila IX</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Fredoka untuk sentuhan edukatif modern -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fef2f2 100%);
+            min-height: 100vh;
+            color: #1e293b;
+        }
+        h1, h2, h3, .font-game {
+            font-family: 'Fredoka', sans-serif;
+        }
+        /* Animasi Halus */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 3.5s ease-in-out infinite;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-in {
+            animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.35s ease-in-out;
+        }
+        /* Custom Button 3D Effect */
+        .btn-game {
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+        }
+        .btn-game:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+        }
+        .btn-game:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- NAVBAR ATAS -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="confirmReturnHome()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 text-white flex items-center justify-center shadow-md font-game text-xl">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div>
+                    <span class="font-game font-bold text-lg text-slate-800 block leading-tight">Suara Merdeka</span>
+                    <span class="text-xs font-medium text-slate-500">Pendidikan Pancasila • Kelas IX SMP</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Indikator Skor Mini saat bermain -->
+                <div id="nav-stats" class="hidden items-center gap-2 sm:gap-4 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                    <div class="flex items-center gap-1.5 text-amber-600 font-bold text-sm">
+                        <i class="fa-solid fa-star"></i>
+                        <span id="nav-score">0</span>
+                    </div>
+                    <div class="h-4 w-px bg-slate-300"></div>
+                    <div class="text-xs font-semibold text-slate-600" id="nav-level-badge">Level 1</div>
+                </div>
+
+                <!-- Tombol Petunjuk -->
+                <button onclick="openModal('modal-petunjuk')" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold text-sm transition flex items-center gap-1.5 border border-sky-200" title="Petunjuk Permainan">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <span class="hidden sm:inline">Petunjuk</span>
+                </button>
+
+                <!-- Tombol Panel Guru -->
+                <button onclick="openModal('modal-guru')" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-sm transition flex items-center gap-1.5 border border-indigo-200" title="Panduan & Kunci Jawaban Guru">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <span class="hidden sm:inline">Panel Guru</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 flex flex-col justify-center">
+
+        <!-- ==========================================
+             1. HALAMAN PEMBUKA (START SCREEN)
+             ========================================== -->
+        <section id="screen-home" class="pop-in bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+            <!-- Banner Atas -->
+            <div class="bg-gradient-to-r from-red-600 via-rose-600 to-amber-500 p-6 sm:p-10 text-white relative overflow-hidden">
+                <!-- Dekorasi Latar -->
+                <div class="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-xl"></div>
+                <div class="absolute left-1/2 -bottom-16 w-64 h-64 bg-amber-300/20 rounded-full blur-2xl"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                    <div class="flex-1 text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-bold tracking-wider uppercase mb-3">
+                            Misi Literasi Demokrasi • 10–30 Menit
+                        </span>
+                        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-3">
+                            Suara Merdeka: Era Keterbukaan Informasi
+                        </h1>
+                        <p class="text-red-50 text-sm sm:text-base leading-relaxed max-w-xl">
+                            Jadilah warga negara muda yang kritis, santun, dan taat hukum! Selesaikan 3 level tantangan untuk menguasai hak berpendapat sebagai bagian dari Hak Asasi Manusia (HAM).
+                        </p>
+                    </div>
+                    <!-- Ilustrasi SVG Kustom -->
+                    <div class="w-40 h-40 sm:w-48 sm:h-48 flex-shrink-0 animate-float">
+                        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-lg">
+                            <circle cx="100" cy="100" r="88" fill="#ffffff" fill-opacity="0.15"/>
+                            <circle cx="100" cy="100" r="70" fill="#ffffff" fill-opacity="0.95"/>
+                            <!-- Perisai Garuda / Demokrasi -->
+                            <path d="M100 42 L142 60 V102 C142 130 100 154 100 154 C100 154 58 130 58 102 V60 L100 42 Z" fill="#dc2626"/>
+                            <path d="M100 48 L136 64 V101 C136 125 100 146 100 146 V48 Z" fill="#b91c1c"/>
+                            <!-- Megafon / Suara -->
+                            <path d="M78 96 L112 78 V122 L78 104 Z" fill="#fbbf24"/>
+                            <rect x="70" y="94" width="12" height="12" rx="3" fill="#f8fafc"/>
+                            <path d="M118 86 Q128 100 118 114" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>
+                            <path d="M125 78 Q140 100 125 122" stroke="#fde68a" stroke-width="4" stroke-linecap="round" fill="none"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Isi Bawah Halaman Pembuka -->
+            <div class="p-6 sm:p-8 space-y-6">
+                <!-- Tujuan Pembelajaran -->
+                <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 sm:p-5">
+                    <h2 class="font-bold text-sky-900 flex items-center gap-2 text-base sm:text-lg mb-1.5">
+                        <i class="fa-solid fa-bullseye text-sky-600"></i> Tujuan Pembelajaran
+                    </h2>
+                    <p class="text-sm text-sky-800 leading-relaxed">
+                        Peserta didik mampu menjelaskan kemerdekaan berpendapat warga negara pada era keterbukaan informasi sebagai bagian dari <strong>Hak Asasi Manusia (HAM)</strong> serta menemukan <strong>landasan hukumnya</strong> dalam peraturan perundang-undangan di Indonesia.
+                    </p>
+                </div>
+
+                <!-- 3 Level Preview -->
+                <div>
+                    <h3 class="font-bold text-slate-700 text-sm uppercase tracking-wider mb-3">Peta Petualangan (3 Level Bertahap)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs">Level 1 • Mudah</span>
+                                <i class="fa-solid fa-seedling text-emerald-600"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm">Konsep Dasar & HAM</h4>
+                            <p class="text-xs text-slate-500 mt-1">Pilihan Ganda & Benar-Salah mengenai hak berpendapat dan era keterbukaan informasi.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-800 font-bold text-xs">Level 2 • Sedang</span>
+                                <i class="fa-solid fa-scale-balanced text-amber-600"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm">Landasan Hukum & Istilah</h4>
+                            <p class="text-xs text-slate-500 mt-1">Menjodohkan pasal/undang-undang dan Teka-Teki Susun Kata kunci konstitusi.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2.5 py-0.5 rounded-lg bg-rose-100 text-rose-800 font-bold text-xs">Level 3 • HOTS</span>
+                                <i class="fa-solid fa-shield-halved text-rose-600"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm">Studi Kasus Era Digital</h4>
+                            <p class="text-xs text-slate-500 mt-1">Analisis studi kasus nyata kebebasan berpendapat, hoaks, dan batasannya di media sosial.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Nama Siswa & Tombol Mulai -->
+                <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div class="flex-1">
+                        <label for="player-name" class="sr-only">Nama Lengkap Siswa</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user-graduate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="player-name" placeholder="Ketik nama lengkapmu sebelum mulai..." 
+                                class="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-slate-200 focus:border-red-500 focus:outline-none text-slate-800 font-medium transition">
+                        </div>
+                        <p id="name-error" class="text-xs text-rose-600 font-semibold mt-1 hidden">
+                            <i class="fa-solid fa-circle-exclamation"></i> Silakan masukkan namamu terlebih dahulu ya!
+                        </p>
+                    </div>
+                    <button onclick="startGame()" class="btn-game px-8 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-game font-bold text-lg flex items-center justify-center gap-2 cursor-pointer">
+                        <span>Mulai Misi</span>
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             2. HALAMAN PERMAINAN (GAMEPLAY SCREEN)
+             ========================================== -->
+        <section id="screen-game" class="hidden pop-in space-y-4">
+            <!-- Header Progres Level -->
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div class="flex items-center gap-2">
+                        <span id="level-tag" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                            Level 1: Konsep Dasar & HAM
+                        </span>
+                        <span id="question-type-badge" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600">
+                            Pilihan Ganda
+                        </span>
+                    </div>
+                    <span class="text-xs font-bold text-slate-500" id="progress-text">Soal 1 dari 12</span>
+                </div>
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                    <div id="progress-bar" class="bg-gradient-to-r from-red-500 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 8%;"></div>
+                </div>
+            </div>
+
+            <!-- Kartu Soal Utama -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-slate-100">
+                <!-- Konteks Studi Kasus (Jika ada) -->
+                <div id="case-study-box" class="hidden mb-5 p-4 sm:p-5 rounded-2xl bg-amber-50/80 border-l-4 border-amber-500 text-slate-700 text-sm leading-relaxed">
+                    <div class="font-bold text-amber-800 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-newspaper"></i> Simak Kasus Berikut:
+                    </div>
+                    <p id="case-study-text"></p>
+                </div>
+
+                <!-- Pertanyaan -->
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 leading-snug mb-6">
+                    Memuat pertanyaan...
+                </h2>
+
+                <!-- Area Interaksi Dinamis (Pilihan Ganda / Benar-Salah / Menjodohkan / Teka-Teki) -->
+                <div id="interaction-area" class="space-y-3">
+                    <!-- Diisi oleh JavaScript -->
+                </div>
+
+                <!-- Tombol Cek Jawaban (Khusus tipe soal Menjodohkan & Teka-Teki) -->
+                <div id="submit-custom-wrapper" class="hidden mt-6 flex justify-end">
+                    <button id="btn-submit-custom" onclick="checkCustomAnswer()" class="btn-game px-6 py-3 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-check-double"></i> Periksa Jawaban
+                    </button>
+                </div>
+
+                <!-- KOTAK UMPAN BALIK LANGSUNG (FEEDBACK & PENJELASAN) -->
+                <div id="feedback-box" class="hidden mt-6 p-5 rounded-2xl border-2 transition-all pop-in">
+                    <div class="flex items-start gap-3.5">
+                        <div id="feedback-icon" class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl text-white">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 id="feedback-title" class="font-game font-bold text-lg">Jawaban Tepat!</h4>
+                            <p id="feedback-explanation" class="text-sm mt-1 leading-relaxed"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-black/10 flex justify-end">
+                        <button id="btn-next-question" onclick="nextQuestion()" class="btn-game px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm flex items-center gap-2 cursor-pointer">
+                            <span>Lanjut</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             3. TRANSISI ANTAR LEVEL (LEVEL COMPLETE)
+             ========================================== -->
+        <section id="screen-level-up" class="hidden pop-in bg-white rounded-3xl p-8 shadow-xl border border-slate-100 text-center max-w-xl mx-auto">
+            <div class="w-20 h-20 mx-auto rounded-2xl bg-amber-100 text-amber-500 flex items-center justify-center text-4xl mb-4 shadow-inner">
+                <i class="fa-solid fa-medal"></i>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+                Level Selesai!
+            </span>
+            <h2 id="levelup-title" class="text-2xl sm:text-3xl font-bold text-slate-800 mt-3">
+                Hebat! Kamu Lulus Level 1
+            </h2>
+            <p id="levelup-desc" class="text-slate-600 text-sm mt-2 leading-relaxed">
+                Kamu telah memahami konsep dasar kemerdekaan berpendapat sebagai bagian dari HAM. Bersiaplah menghadapi tantangan landasan hukum di Level 2!
+            </p>
+            
+            <div class="my-6 p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-around">
+                <div>
+                    <span class="text-xs text-slate-500 block">Skor Sementara</span>
+                    <span id="levelup-score" class="font-game font-bold text-2xl text-amber-600">0</span>
+                </div>
+                <div class="h-10 w-px bg-slate-200"></div>
+                <div>
+                    <span class="text-xs text-slate-500 block">Lencana Diraih</span>
+                    <span id="levelup-badge" class="font-bold text-sm text-indigo-700">Duta Demokrasi Pemula</span>
+                </div>
+            </div>
+
+            <button onclick="continueToNextLevel()" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-game font-bold text-lg flex items-center justify-center gap-2 cursor-pointer">
+                <span>Lanjut ke Level Berikutnya</span>
+                <i class="fa-solid fa-forward"></i>
+            </button>
+        </section>
+
+        <!-- ==========================================
+             4. HALAMAN HASIL AKHIR (SUMMARY SCREEN)
+             ========================================== -->
+        <section id="screen-result" class="hidden pop-in bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+            <div class="bg-gradient-to-br from-indigo-700 via-blue-700 to-sky-600 p-6 sm:p-8 text-white text-center relative">
+                <span class="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider mb-2">
+                    Laporan Hasil Belajar
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-bold" id="result-player-name">Nama Siswa</h2>
+                <p class="text-blue-100 text-sm mt-1">Kelas IX • Pendidikan Pancasila</p>
+
+                <!-- Bintang Perolehan -->
+                <div id="result-stars" class="flex items-center justify-center gap-3 my-4 text-3xl sm:text-4xl text-amber-300 drop-shadow">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+
+                <!-- Skor & Predikat -->
+                <div class="inline-flex items-center gap-4 bg-white/15 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/25">
+                    <div class="text-left">
+                        <span class="text-xs text-blue-100 block">Nilai Akhir</span>
+                        <span id="result-final-score" class="font-game text-3xl font-bold">100</span>
+                    </div>
+                    <div class="h-10 w-px bg-white/30"></div>
+                    <div class="text-left">
+                        <span class="text-xs text-blue-100 block">Gelar / Lencana</span>
+                        <span id="result-badge-title" class="font-bold text-base text-amber-200">Pelopor Demokrasi Digital</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 sm:p-8 space-y-6">
+                <!-- Analisis Penguasaan Kompetensi -->
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-indigo-600"></i> Analisis Penguasaan Materi
+                    </h3>
+                    <div id="mastery-breakdown" class="space-y-3">
+                        <!-- Diisi dinamis oleh JS -->
+                    </div>
+                </div>
+
+                <!-- Saran Latihan & Tindak Lanjut -->
+                <div id="recommendation-box" class="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200">
+                    <h4 class="font-bold text-amber-900 text-sm flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-lightbulb text-amber-600"></i> Saran Latihan & Pengembangan Diri
+                    </h4>
+                    <p id="recommendation-text" class="text-sm text-amber-800 leading-relaxed"></p>
+                </div>
+
+                <!-- Tombol Aksi Akhir -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button onclick="restartGame()" class="btn-game flex-1 py-3.5 px-5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-rotate-right"></i> Main Ulang (Tingkatkan Skor)
+                    </button>
+                    <button onclick="copyResultSummary()" class="btn-game flex-1 py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-copy"></i> Salin Laporan Nilai untuk Guru
+                    </button>
+                </div>
+                <p id="copy-toast" class="hidden text-center text-xs font-bold text-emerald-700 bg-emerald-50 py-2 rounded-xl border border-emerald-200">
+                    <i class="fa-solid fa-circle-check"></i> Laporan hasil belajar berhasil disalin ke papan klip! Silakan tempel (paste) di grup kelas atau LMS.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-4 px-4 text-xs text-slate-500 border-t border-slate-200/70 bg-white/50">
+        Media Pembelajaran Interaktif Pendidikan Pancasila Kelas IX SMP • Materi: Kemerdekaan Berpendapat pada Era Keterbukaan Informasi
+    </footer>
+
+    <!-- ==========================================
+         MODAL 1: PETUNJUK PENGGUNAAN & CARA BERBAGI
+         ========================================== -->
+    <div id="modal-petunjuk" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden pop-in">
+            <div class="p-5 sm:p-6 bg-sky-600 text-white flex items-center justify-between">
+                <h3 class="font-game text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> Petunjuk Penggunaan & Informasi Game
+                </h3>
+                <button onclick="closeModal('modal-petunjuk')" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-5 text-sm text-slate-700 leading-relaxed">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-base mb-1.5">1. Cara Bermain (Untuk Siswa)</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Masukkan <strong>Nama Lengkap</strong> pada halaman pembuka, lalu klik <strong>Mulai Misi</strong>.</li>
+                        <li>Selesaikan <strong>12 tantangan</strong> yang terbagi ke dalam <strong>3 Level</strong> (Mudah, Sedang, dan Studi Kasus HOTS).</li>
+                        <li>Setiap jawaban akan langsung memunculkan <strong>penjelasan materi</strong>. Bacalah dengan saksama agar pemahamanmu semakin kuat.</li>
+                        <li>Di akhir permainan, klik <strong>Salin Laporan Nilai</strong> untuk mengirimkan hasil belajarmu kepada guru.</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <h4 class="font-bold text-slate-900 text-base mb-1.5">2. Cara Menyimpan & Membagikan Game (Untuk Guru)</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Menyimpan Offline:</strong> Simpan kode halaman ini sebagai satu file berakhiran <code>.html</code> (contoh: <code>game-pancasila-ix.html</code>). File dapat dibuka langsung di Google Chrome, Edge, Safari, atau browser HP tanpa perlu instalasi aplikasi tambahan.</li>
+                        <li><strong>Membagikan ke Siswa:</strong> Unggah file <code>.html</code> tersebut ke Google Drive, Google Classroom, WhatsApp Group kelas, atau hosting gratis (seperti GitHub Pages / Netlify) agar siswa dapat mengaksesnya melalui tautan.</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                    <h4 class="font-bold text-amber-900 text-base mb-1">3. Keterbatasan Teknis</h4>
+                    <p class="text-amber-800 text-xs leading-relaxed">
+                        Karena game ini dirancang dalam satu file mandiri tanpa server pusat (database eksternal), skor siswa tidak tersimpan otomatis di akun guru. Siswa perlu menekan tombol <strong>"Salin Laporan Nilai untuk Guru"</strong> di layar akhir atau mengambil tangkapan layar (screenshot) sebagai bukti penyelesaian tugas.
+                    </p>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
+                <button onclick="closeModal('modal-petunjuk')" class="px-6 py-2.5 rounded-xl bg-sky-600 text-white font-bold text-sm hover:bg-sky-700 transition">
+                    Saya Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2: PANEL GURU (KUNCI JAWABAN, PENILAIAN, REMEDIAL & PENGAYAAN)
+         ========================================== -->
+    <div id="modal-guru" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden pop-in">
+            <div class="p-5 sm:p-6 bg-indigo-700 text-white flex items-center justify-between">
+                <div>
+                    <h3 class="font-game text-xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-chalkboard-user"></i> Panel Guru & Perangkat Evaluasi
+                    </h3>
+                    <p class="text-xs text-indigo-200 mt-0.5">Kunci Jawaban, Sistem Penilaian, Remedial, dan Pengayaan</p>
+                </div>
+                <button onclick="closeModal('modal-guru')" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Tab Navigasi Panel Guru -->
+            <div class="flex border-b border-slate-200 bg-slate-50 px-4 pt-2 gap-2 overflow-x-auto">
+                <button onclick="switchGuruTab('tab-kunci')" id="btn-tab-kunci" class="guru-tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold rounded-t-xl bg-white text-indigo-700 border-t border-x border-slate-200">
+                    Kunci Jawaban (12 Soal)
+                </button>
+                <button onclick="switchGuruTab('tab-penilaian')" id="btn-tab-penilaian" class="guru-tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl text-slate-600 hover:text-indigo-700">
+                    Sistem Penilaian
+                </button>
+                <button onclick="switchGuruTab('tab-tindaklanjut')" id="btn-tab-tindaklanjut" class="guru-tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl text-slate-600 hover:text-indigo-700">
+                    Remedial & Pengayaan
+                </button>
+            </div>
+
+            <!-- Konten Tab Panel Guru -->
+            <div class="p-6 overflow-y-auto flex-1 text-sm text-slate-700">
+                <!-- TAB 1: KUNCI JAWABAN -->
+                <div id="tab-kunci" class="guru-tab-content space-y-4">
+                    <div class="p-3 rounded-xl bg-indigo-50 text-indigo-900 text-xs font-medium">
+                        Guru dapat memeriksa seluruh butir soal, kunci jawaban, dan pembahasan sebelum membagikan game ini kepada peserta didik.
+                    </div>
+                    <div id="teacher-answer-key-list" class="space-y-3">
+                        <!-- Diisi otomatis dari array BANK_SOAL agar 100% sinkron -->
+                    </div>
+                </div>
+
+                <!-- TAB 2: SISTEM PENILAIAN -->
+                <div id="tab-penilaian" class="guru-tab-content hidden space-y-4">
+                    <h4 class="font-bold text-slate-900 text-base">Skema Perhitungan Skor (Skala 0 – 100)</h4>
+                    <p class="text-slate-600">Total terdapat <strong>12 soal</strong> yang terbagi menjadi 3 level dengan bobot berbeda sesuai tingkat kesulitan kognitif (C2 hingga C4):</p>
+                    
+                    <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead class="bg-slate-100 text-slate-800">
+                                <tr>
+                                    <th class="p-3 border-b">Level</th>
+                                    <th class="p-3 border-b">Fokus Materi & Tipe Soal</th>
+                                    <th class="p-3 border-b">Jumlah Soal</th>
+                                    <th class="p-3 border-b">Bobot / Soal</th>
+                                    <th class="p-3 border-b">Total Poin</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="p-3 font-bold text-emerald-700">Level 1</td>
+                                    <td class="p-3">Konsep Dasar & HAM (Pilihan Ganda & Benar-Salah)</td>
+                                    <td class="p-3">4 Soal</td>
+                                    <td class="p-3">5 Poin</td>
+                                    <td class="p-3 font-bold">20 Poin</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-amber-700">Level 2</td>
+                                    <td class="p-3">Landasan Hukum & Istilah (Menjodohkan & Teka-Teki Kata)</td>
+                                    <td class="p-3">4 Soal</td>
+                                    <td class="p-3">10 Poin</td>
+                                    <td class="p-3 font-bold">40 Poin</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-rose-700">Level 3</td>
+                                    <td class="p-3">Studi Kasus Era Keterbukaan Informasi (Analisis HOTS)</td>
+                                    <td class="p-3">4 Soal</td>
+                                    <td class="p-3">10 Poin</td>
+                                    <td class="p-3 font-bold">40 Poin</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="bg-slate-50 font-bold">
+                                <tr>
+                                    <td colspan="2" class="p-3">Total Keseluruhan</td>
+                                    <td class="p-3">12 Soal</td>
+                                    <td class="p-3">-</td>
+                                    <td class="p-3 text-indigo-700">100 Poin</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <h4 class="font-bold text-slate-900 text-base pt-2">Kriteria Ketuntasan & Lencana</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm">
+                        <li class="p-3 rounded-xl bg-emerald-50 border border-emerald-200"><strong>85 – 100 (3 Bintang • Pelopor Demokrasi Digital):</strong> Sangat Baik / Melampaui KKTP.</li>
+                        <li class="p-3 rounded-xl bg-sky-50 border border-sky-200"><strong>70 – 84 (2 Bintang • Warga Negara Kritis):</strong> Baik / Mencapai KKTP.</li>
+                        <li class="p-3 rounded-xl bg-amber-50 border border-amber-200"><strong>&lt; 70 (1 Bintang • Sahabat Literasi):</strong> Perlu bimbingan / Remedial.</li>
+                    </ul>
+                </div>
+
+                <!-- TAB 3: REMEDIAL & PENGAYAAN -->
+                <div id="tab-tindaklanjut" class="guru-tab-content hidden space-y-5">
+                    <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 space-y-2">
+                        <h4 class="font-bold text-rose-900 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-life-ring"></i> Program Remedial (Nilai &lt; 70)
+                        </h4>
+                        <p class="text-rose-800 text-xs sm:text-sm leading-relaxed">
+                            Ditujukan bagi peserta didik yang belum mencapai Kriteria Ketercapaian Tujuan Pembelajaran (KKTP):
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-1.5 text-xs sm:text-sm text-rose-900">
+                            <li><strong>Pendampingan Terbimbing:</strong> Guru mengulas kembali perbedaan hak berpendapat (Pasal 28E ayat 3 UUD NRI Tahun 1945) dengan pembatasannya (Pasal 28J ayat 2 UUD NRI Tahun 1945).</li>
+                            <li><strong>Latihan Peta Konsep:</strong> Siswa diminta membuat bagan sederhana berisi 4 landasan hukum kemerdekaan berpendapat beserta contoh perilaku yang sesuai di lingkungan sekolah.</li>
+                            <li><strong>Tes Ulang:</strong> Siswa memainkan kembali game ini hingga memperoleh skor minimal 75.</li>
+                        </ol>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+                        <h4 class="font-bold text-emerald-900 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-rocket"></i> Program Pengayaan (Nilai ≥ 85)
+                        </h4>
+                        <p class="text-emerald-800 text-xs sm:text-sm leading-relaxed">
+                            Ditujukan bagi peserta didik yang telah menguasai materi dengan sangat baik untuk memperdalam nalar kritis:
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-1.5 text-xs sm:text-sm text-emerald-900">
+                            <li><strong>Proyek Kampanye Digital:</strong> Membuat poster infografis atau konten video pendek bertema <em>"Saring Sebelum Sharing: Berpendapat Santun di Era Keterbukaan Informasi"</em>.</li>
+                            <li><strong>Simulasi Forum Musyawarah:</strong> Menjadi moderator atau juru bicara dalam simulasi penyampaian aspirasi siswa kepada OSIS/pihak sekolah menggunakan prosedur UU No. 9 Tahun 1998.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
+                <button onclick="closeModal('modal-guru')" class="px-6 py-2.5 rounded-xl bg-indigo-700 text-white font-bold text-sm hover:bg-indigo-800 transition">
+                    Tutup Panel Guru
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL KONFIRMASI KEMBALI KE BERANDA (PENGGANTI CONFIRM)
+         ========================================== -->
+    <div id="modal-confirm-home" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl pop-in">
+            <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-3">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-game text-xl font-bold text-slate-800">Kembali ke Halaman Awal?</h3>
+            <p class="text-sm text-slate-600 mt-1.5">Progres permainanmu saat ini akan diulang dari awal jika kembali ke beranda.</p>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-confirm-home')" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+                    Batal
+                </button>
+                <button onclick="executeReturnHome()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition">
+                    Ya, Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCRIPT LOGIKA GAME EDUKASI
+         ========================================== -->
+    <script>
+        /**
+         * BANK SOAL TERSTRUKTUR (12 SOAL - 3 LEVEL)
+         * Kategori Kompetensi:
+         * - 'konsep': Kemerdekaan Berpendapat sebagai HAM & Keterbukaan Informasi
+         * - 'hukum': Landasan Hukum Kemerdekaan Berpendapat
+         * - 'penerapan': Tanggung Jawab & Studi Kasus Era Digital
+         */
+        const BANK_SOAL = [
+            // ================= LEVEL 1: KONSEP DASAR & HAM (4 Soal x 5 Poin = 20 Poin) =================
+            {
+                id: 1,
+                level: 1,
+                levelName: "Level 1: Konsep Dasar & HAM",
+                type: "mcq",
+                typeLabel: "Pilihan Ganda",
+                category: "konsep",
+                points: 5,
+                question: "Mengapa kemerdekaan menyampaikan pendapat di muka umum dikategorikan sebagai bagian dari Hak Asasi Manusia (HAM)?",
+                options: [
+                    "Karena hak tersebut merupakan anugerah Tuhan Yang Maha Esa yang melekat pada martabat setiap manusia sejak lahir",
+                    "Karena hak tersebut hanya diberikan pemerintah kepada warga negara yang sudah memiliki KTP",
+                    "Karena warga negara bebas berbicara apa saja tanpa perlu memikirkan dampaknya bagi orang lain",
+                    "Karena kemerdekaan berpendapat merupakan hadiah dari negara-negara maju kepada Indonesia"
+                ],
+                correctIndex: 0,
+                explanation: "Kemerdekaan berpendapat adalah bagian dari HAM karena merupakan hak dasar yang melekat pada kodrat dan martabat manusia sebagai anugerah Tuhan Yang Maha Esa, sehingga wajib dihormati, dijunjung tinggi, dan dilindungi oleh negara.",
+                keySummary: "A (Anugerah Tuhan YME yang melekat pada martabat setiap manusia sejak lahir)"
+            },
+            {
+                id: 2,
+                level: 1,
+                levelName: "Level 1: Konsep Dasar & HAM",
+                type: "tf",
+                typeLabel: "Benar atau Salah",
+                category: "konsep",
+                points: 5,
+                question: "Pada era keterbukaan informasi publik, masyarakat berhak memperoleh informasi dari badan publik mengenai kebijakan yang menyangkut hajat hidup orang banyak untuk mengawasi jalannya pemerintahan.",
+                correctBool: true,
+                explanation: "PERNYATAAN BENAR. Keterbukaan informasi publik merupakan ciri penting negara demokratis yang menjamin hak warga negara untuk tahu (right to know) sehingga dapat berpartisipasi dan mengawasi penyelenggaraan negara.",
+                keySummary: "BENAR"
+            },
+            {
+                id: 3,
+                level: 1,
+                levelName: "Level 1: Konsep Dasar & HAM",
+                type: "mcq",
+                typeLabel: "Pilihan Ganda",
+                category: "konsep",
+                points: 5,
+                question: "Manakah di bawah ini yang BUKAN merupakan bentuk penyampaian pendapat di muka umum secara damai dan konstitusional?",
+                options: [
+                    "Unjuk rasa atau demonstrasi yang diberitahukan kepada pihak kepolisian",
+                    "Rapat umum dan mimbar bebas di ruang publik yang diizinkan",
+                    "Menyebarkan fitnah dan ujaran kebencian melalui akun anonim di media sosial",
+                    "Menyampaikan petisi atau tulisan kritik melalui media massa secara santun"
+                ],
+                correctIndex: 2,
+                explanation: "Menyebarkan fitnah dan ujaran kebencian bukanlah bentuk kemerdekaan berpendapat yang dilindungi hukum, melainkan pelanggaran hukum yang mencederai hak dan nama baik orang lain.",
+                keySummary: "C (Menyebarkan fitnah dan ujaran kebencian melalui akun anonim)"
+            },
+            {
+                id: 4,
+                level: 1,
+                levelName: "Level 1: Konsep Dasar & HAM",
+                type: "tf",
+                typeLabel: "Benar atau Salah",
+                category: "konsep",
+                points: 5,
+                question: "Kemerdekaan berpendapat warga negara bersifat mutlak tanpa batas, sehingga seseorang boleh menghina suku, agama, atau ras lain atas nama kebebasan berekspresi.",
+                correctBool: false,
+                explanation: "PERNYATAAN SALAH. Tidak ada hak asasi yang bersifat mutlak tanpa batas. Kebebasan seseorang dibatasi oleh kewajiban menghormati hak asasi orang lain, ketertiban umum, nilai agama, serta keutuhan bangsa (Pasal 28J ayat 2 UUD NRI Tahun 1945).",
+                keySummary: "SALAH"
+            },
+
+            // ================= LEVEL 2: LANDASAN HUKUM & ISTILAH (4 Soal x 10 Poin = 40 Poin) =================
+            {
+                id: 5,
+                level: 2,
+                levelName: "Level 2: Landasan Hukum & Istilah",
+                type: "mcq",
+                typeLabel: "Pilihan Ganda",
+                category: "hukum",
+                points: 10,
+                question: "Pasal dalam UUD NRI Tahun 1945 yang secara tegas menyatakan bahwa 'Setiap orang berhak atas kebebasan berserikat, berkumpul, dan mengeluarkan pendapat' adalah...",
+                options: [
+                    "Pasal 27 ayat (1)",
+                    "Pasal 28E ayat (3)",
+                    "Pasal 30 ayat (1)",
+                    "Pasal 31 ayat (2)"
+                ],
+                correctIndex: 1,
+                explanation: "Pasal 28E ayat (3) UUD NRI Tahun 1945 merupakan landasan konstitusional utama yang berbunyi: 'Setiap orang berhak atas kebebasan berserikat, berkumpul, dan mengeluarkan pendapat.'",
+                keySummary: "B (Pasal 28E ayat 3 UUD NRI Tahun 1945)"
+            },
+            {
+                id: 6,
+                level: 2,
+                levelName: "Level 2: Landasan Hukum & Istilah",
+                type: "matching",
+                typeLabel: "Menjodohkan Hukum",
+                category: "hukum",
+                points: 10,
+                question: "Pasangkan peraturan perundang-undangan di sebelah kiri dengan substansi pengaturan yang tepat di sebelah kanan!",
+                pairs: [
+                    {
+                        left: "Pasal 28F UUD NRI 1945",
+                        right: "Hak berkomunikasi dan memperoleh informasi untuk mengembangkan pribadi"
+                    },
+                    {
+                        left: "UU No. 9 Tahun 1998",
+                        right: "Kemerdekaan Menyampaikan Pendapat di Muka Umum"
+                    },
+                    {
+                        left: "UU No. 14 Tahun 2008",
+                        right: "Keterbukaan Informasi Publik (KIP)"
+                    },
+                    {
+                        left: "Pasal 28J ayat (2) UUD 1945",
+                        right: "Kewajiban tunduk pada pembatasan undang-undang demi menghormati hak orang lain"
+                    }
+                ],
+                explanation: "Keempat aturan tersebut saling melengkapi: Pasal 28F menjamin hak informasi, UU No. 9 Tahun 1998 mengatur tata cara berpendapat di muka umum, UU No. 14 Tahun 2008 menjamin keterbukaan informasi publik, dan Pasal 28J ayat (2) mengatur batasannya.",
+                keySummary: "28F → Hak informasi | UU 9/1998 → Pendapat di Muka Umum | UU 14/2008 → KIP | 28J(2) → Pembatasan UU"
+            },
+            {
+                id: 7,
+                level: 2,
+                levelName: "Level 2: Landasan Hukum & Istilah",
+                type: "scramble",
+                typeLabel: "Teka-Teki Susun Kata",
+                category: "hukum",
+                points: 10,
+                question: "Susun huruf-huruf berikut menjadi satu kata kunci penting: Hukum dasar tertinggi di Indonesia yang menjamin hak warga negara untuk berpendapat dan memperoleh informasi!",
+                hint: "Terdiri dari 10 huruf. Berawalan huruf K dan berakhiran I.",
+                targetWord: "KONSTITUSI",
+                explanation: "KONSTITUSI (yakni UUD NRI Tahun 1945) adalah hukum dasar tertulis tertinggi di Indonesia yang memuat jaminan hak asasi warga negara, termasuk kemerdekaan berpendapat pada Pasal 28, Pasal 28E ayat (3), dan Pasal 28F.",
+                keySummary: "KONSTITUSI"
+            },
+            {
+                id: 8,
+                level: 2,
+                levelName: "Level 2: Landasan Hukum & Istilah",
+                type: "mcq",
+                typeLabel: "Pilihan Ganda",
+                category: "hukum",
+                points: 10,
+                question: "Menurut UU No. 9 Tahun 1998, penyampaian pendapat di muka umum (seperti unjuk rasa) wajib diberitahukan secara tertulis kepada Polri selambat-lambatnya berapa lama sebelum kegiatan dimulai?",
+                options: [
+                    "1 x 24 jam",
+                    "2 x 24 jam",
+                    "3 x 24 jam",
+                    "7 x 24 jam"
+                ],
+                correctIndex: 2,
+                explanation: "Berdasarkan Pasal 10 ayat (3) UU No. 9 Tahun 1998, pemberitahuan tertulis kepada Polri disampaikan selambat-lambatnya 3 x 24 jam sebelum kegiatan dimulai agar kepolisian dapat memberikan pengamanan dan mengatur lalu lintas.",
+                keySummary: "C (3 x 24 jam sebelum kegiatan dimulai)"
+            },
+
+            // ================= LEVEL 3: STUDI KASUS HOTS ERA DIGITAL (4 Soal x 10 Poin = 40 Poin) =================
+            {
+                id: 9,
+                level: 3,
+                levelName: "Level 3: Studi Kasus Era Digital",
+                type: "mcq",
+                typeLabel: "Studi Kasus HOTS",
+                category: "penerapan",
+                points: 10,
+                caseText: "Raka, siswa kelas IX, melihat jalan raya di depan sekolahnya rusak parah dan membahayakan pengendara. Raka ingin menyampaikan aspirasi agar pemerintah daerah segera memperbaikinya melalui media sosial.",
+                question: "Tindakan Raka yang paling mencerminkan pelaksanaan kemerdekaan berpendapat secara bertanggung jawab di era keterbukaan informasi adalah...",
+                options: [
+                    "Membuat video kondisi jalan rusak disertai fakta lokasi yang akurat, bahasa santun, serta menandai akun resmi dinas terkait",
+                    "Menulis komentar kasar yang memaki-maki kepala daerah dengan kata-kata merendahkan martabat",
+                    "Mengedit foto jalan rusak dari kota lain lalu menyebarkannya agar unggahannya cepat viral",
+                    "Mengajak teman-temannya memblokir jalan raya dengan membakar ban bekas tanpa izin"
+                ],
+                correctIndex: 0,
+                explanation: "Menyampaikan kritik berbasis fakta lapangan yang akurat dengan bahasa yang santun kepada instansi berwenang merupakan wujud partisipasi warga negara yang cerdas, konstruktif, dan sesuai koridor hukum.",
+                keySummary: "A (Membuat video fakta lokasi akurat, bahasa santun, menandai akun resmi dinas terkait)"
+            },
+            {
+                id: 10,
+                level: 3,
+                levelName: "Level 3: Studi Kasus Era Digital",
+                type: "mcq",
+                typeLabel: "Studi Kasus HOTS",
+                category: "penerapan",
+                points: 10,
+                caseText: "Di grup percakapan kelas beredar tautan berita berjudul 'Ujian Akhir Sekolah Dibatalkan Besok Pagi!' tanpa nama penulis dan berasal dari situs blog tidak dikenal. Beberapa teman langsung panik dan meneruskannya ke grup lain.",
+                question: "Sebagai pelajar yang melek literasi di era keterbukaan informasi, langkah pertama yang harus kamu lakukan adalah...",
+                options: [
+                    "Langsung meneruskan pesan tersebut ke grup orang tua agar semua orang bersiap-siap",
+                    "Mengecek kebenaran informasi tersebut melalui kanal resmi sekolah atau pengumuman resmi Dinas Pendidikan sebelum menyebarkannya",
+                    "Mengomentari pesan tersebut dengan candaan agar suasana grup menjadi ramai",
+                    "Mempercayainya begitu saja karena pesan tersebut dikirim oleh ketua kelas"
+                ],
+                correctIndex: 1,
+                explanation: "Prinsip utama di era keterbukaan informasi adalah 'Saring Sebelum Sharing'. Verifikasi ke sumber resmi mencegah penyebaran berita bohong (hoaks) yang dapat menimbulkan kepanikan dan melanggar UU ITE.",
+                keySummary: "B (Mengecek kebenaran melalui kanal resmi sekolah atau Dinas Pendidikan)"
+            },
+            {
+                id: 11,
+                level: 3,
+                levelName: "Level 3: Studi Kasus Era Digital",
+                type: "mcq",
+                typeLabel: "Studi Kasus HOTS",
+                category: "penerapan",
+                points: 10,
+                caseText: "Dalam forum musyawarah OSIS, terjadi perbedaan pendapat yang tajam antara kelompok yang mengusulkan pentas seni dan kelompok yang mengusulkan bakti sosial. Ketua OSIS memberikan kesempatan setiap perwakilan berbicara secara bergantian.",
+                question: "Nilai Pancasila dan prinsip HAM yang tercermin dalam sikap Ketua OSIS tersebut adalah...",
+                options: [
+                    "Memaksakan kehendak mayoritas agar rapat segera selesai tanpa perdebatan",
+                    "Menjamin kesetaraan hak setiap individu untuk didengar pendapatnya dalam semangat musyawarah mufakat",
+                    "Membatasi hak bicara anggota yang berbeda pendapat dengan pengurus inti",
+                    "Mengutamakan kebebasan individu di atas kepentingan persatuan sekolah"
+                ],
+                correctIndex: 1,
+                explanation: "Memberikan ruang bicara yang adil dalam forum musyawarah mencerminkan Sila ke-4 Pancasila sekaligus penghormatan terhadap hak setiap warga untuk mengeluarkan pendapat secara setara.",
+                keySummary: "B (Menjamin kesetaraan hak setiap individu untuk didengar dalam musyawarah mufakat)"
+            },
+            {
+                id: 12,
+                level: 3,
+                levelName: "Level 3: Studi Kasus Era Digital",
+                type: "mcq",
+                typeLabel: "Studi Kasus HOTS",
+                category: "penerapan",
+                points: 10,
+                caseText: "Seseorang berdalih: 'Ini akun media sosial pribadi saya, jadi saya bebas menyebarkan data pribadi (alamat rumah dan nomor telepon) orang yang tidak saya sukai agar ia mendapat pelajaran!'",
+                question: "Mengapa alasan orang tersebut keliru secara hukum dan bertentangan dengan nilai HAM?",
+                options: [
+                    "Karena media sosial hanya boleh digunakan untuk mengunggah foto liburan",
+                    "Karena tindakan tersebut melanggar hak privasi dan perlindungan data pribadi orang lain yang juga dilindungi UUD NRI Tahun 1945",
+                    "Karena menyebarkan data pribadi diperbolehkan asalkan dilakukan pada malam hari",
+                    "Karena warga negara tidak memiliki hak berpendapat di ruang digital"
+                ],
+                correctIndex: 1,
+                explanation: "Menyebarkan data pribadi orang lain tanpa izin (doxing) melanggar Pasal 28G ayat (1) UUD NRI Tahun 1945 tentang perlindungan diri pribadi serta UU Pelindungan Data Pribadi. Kebebasan berpendapat tidak boleh merampas hak privasi warga lain.",
+                keySummary: "B (Melanggar hak privasi dan perlindungan data pribadi orang lain)"
+            }
+        ];
+
+        // ================= STATE PERMAINAN =================
+        let gameState = {
+            playerName: "",
+            currentIndex: 0,
+            score: 0,
+            answered: false,
+            categoryStats: {
+                konsep: { earned: 0, max: 20, label: "Konsep Kemerdekaan Berpendapat & HAM" },
+                hukum: { earned: 0, max: 40, label: "Landasan Hukum (UUD 1945 & UU)" },
+                penerapan: { earned: 0, max: 40, label: "Analisis Studi Kasus & Etika Digital" }
+            },
+            // State khusus soal menjodohkan
+            matchingSelectedLeft: null,
+            matchingUserPairs: {}, // { leftIndex: rightOriginalIndex }
+            // State khusus soal teka-teki susun kata
+            scrambleSelectedLetters: [], // array of { char, poolIdx }
+            scramblePool: []
+        };
+
+        // ================= INISIALISASI HALAMAN =================
+        window.onload = function () {
+            populateTeacherAnswerKey();
+        };
+
+        // Mengisi Kunci Jawaban di Panel Guru secara otomatis dari BANK_SOAL
+        function populateTeacherAnswerKey() {
+            const container = document.getElementById('teacher-answer-key-list');
+            if (!container) return;
+            container.innerHTML = BANK_SOAL.map((q, idx) => `
+                <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60">
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800">
+                            Soal #${idx + 1} • ${q.levelName} (${q.points} Poin)
+                        </span>
+                        <span class="text-xs font-semibold text-slate-500">${q.typeLabel}</span>
+                    </div>
+                    ${q.caseText ? `<p class="text-xs italic text-slate-600 bg-amber-50 p-2 rounded-lg my-1.5 border-l-2 border-amber-400">"${q.caseText}"</p>` : ''}
+                    <p class="font-bold text-slate-800 text-sm mt-1">${q.question}</p>
+                    <div class="mt-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900">
+                        <strong>Kunci Jawaban:</strong> ${q.keySummary}
+                    </div>
+                    <p class="text-xs text-slate-600 mt-1.5 leading-relaxed"><strong>Pembahasan:</strong> ${q.explanation}</p>
+                </div>
+            `).join('');
+        }
+
+        // ================= NAVIGASI MODAL & TAB =================
+        function openModal(modalId) {
+            const el = document.getElementById(modalId);
+            if (el) {
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            }
+        }
+
+        function closeModal(modalId) {
+            const el = document.getElementById(modalId);
+            if (el) {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            }
+        }
+
+        function switchGuruTab(tabId) {
+            document.querySelectorAll('.guru-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.guru-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-indigo-700', 'border-t', 'border-x', 'border-slate-200', 'font-bold');
+                btn.classList.add('text-slate-600', 'font-semibold');
+            });
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.add('bg-white', 'text-indigo-700', 'border-t', 'border-x', 'border-slate-200', 'font-bold');
+            activeBtn.classList.remove('text-slate-600', 'font-semibold');
+        }
+
+        function confirmReturnHome() {
+            const homeScreen = document.getElementById('screen-home');
+            if (!homeScreen.classList.contains('hidden')) return;
+            openModal('modal-confirm-home');
+        }
+
+        function executeReturnHome() {
+            closeModal('modal-confirm-home');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-level-up').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('nav-stats').classList.add('hidden');
+            document.getElementById('nav-stats').classList.remove('flex');
+            document.getElementById('screen-home').classList.remove('hidden');
+        }
+
+        // ================= MULAI & RESET GAME =================
+        function startGame() {
+            const nameInput = document.getElementById('player-name');
+            const nameErr = document.getElementById('name-error');
+            const cleanName = nameInput.value.trim();
+
+            if (!cleanName) {
+                nameErr.classList.remove('hidden');
+                nameInput.classList.add('border-rose-500', 'animate-shake');
+                setTimeout(() => nameInput.classList.remove('animate-shake'), 400);
+                nameInput.focus();
+                return;
+            }
+
+            nameErr.classList.add('hidden');
+            nameInput.classList.remove('border-rose-500');
+
+            resetState(cleanName);
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+
+            const navStats = document.getElementById('nav-stats');
+            navStats.classList.remove('hidden');
+            navStats.classList.add('flex');
+
+            renderQuestion();
+        }
+
+        function restartGame() {
+            const savedName = gameState.playerName || "Siswa Hebat";
+            resetState(savedName);
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function resetState(playerName) {
+            gameState = {
+                playerName: playerName,
+                currentIndex: 0,
+                score: 0,
+                answered: false,
+                categoryStats: {
+                    konsep: { earned: 0, max: 20, label: "Konsep Kemerdekaan Berpendapat & HAM" },
+                    hukum: { earned: 0, max: 40, label: "Landasan Hukum (UUD 1945 & UU)" },
+                    penerapan: { earned: 0, max: 40, label: "Analisis Studi Kasus & Etika Digital" }
+                },
+                matchingSelectedLeft: null,
+                matchingUserPairs: {},
+                scrambleSelectedLetters: [],
+                scramblePool: []
+            };
+            updateNavbarStats();
+        }
+
+        function updateNavbarStats() {
+            document.getElementById('nav-score').textContent = gameState.score;
+            const currentQ = BANK_SOAL[gameState.currentIndex] || BANK_SOAL[BANK_SOAL.length - 1];
+            document.getElementById('nav-level-badge').textContent = `Level ${currentQ.level}`;
+        }
+
+        // ================= RENDER SOAL BERDASARKAN TIPE =================
+        function renderQuestion() {
+            const q = BANK_SOAL[gameState.currentIndex];
+            gameState.answered = false;
+
+            // Update Header Progres
+            updateNavbarStats();
+            const levelTag = document.getElementById('level-tag');
+            levelTag.textContent = q.levelName;
+            if (q.level === 1) {
+                levelTag.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+            } else if (q.level === 2) {
+                levelTag.className = "px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800";
+            } else {
+                levelTag.className = "px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800";
+            }
+
+            document.getElementById('question-type-badge').textContent = `${q.typeLabel} (+${q.points} Poin)`;
+            document.getElementById('progress-text').textContent = `Soal ${gameState.currentIndex + 1} dari ${BANK_SOAL.length}`;
+            const pct = Math.round(((gameState.currentIndex + 1) / BANK_SOAL.length) * 100);
+            document.getElementById('progress-bar').style.width = `${pct}%`;
+
+            // Studi Kasus Box
+            const caseBox = document.getElementById('case-study-box');
+            if (q.caseText) {
+                caseBox.classList.remove('hidden');
+                document.getElementById('case-study-text').textContent = q.caseText;
+            } else {
+                caseBox.classList.add('hidden');
+            }
+
+            // Teks Pertanyaan
+            document.getElementById('question-text').textContent = q.question;
+
+            // Reset Feedback & Custom Submit Button
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('submit-custom-wrapper').classList.add('hidden');
+
+            const area = document.getElementById('interaction-area');
+            area.innerHTML = "";
+
+            if (q.type === "mcq") {
+                renderMCQ(q, area);
+            } else if (q.type === "tf") {
+                renderTrueFalse(q, area);
+            } else if (q.type === "matching") {
+                renderMatching(q, area);
+            } else if (q.type === "scramble") {
+                renderScramble(q, area);
+            }
+        }
+
+        // 1. RENDER PILIHAN GANDA (MCQ)
+        function renderMCQ(q, container) {
+            const letters = ["A", "B", "C", "D"];
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `mcq-opt-${idx}`;
+                btn.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-sky-500 hover:bg-sky-50/50 transition flex items-start gap-3.5 group cursor-pointer";
+                btn.onclick = () => handleMCQAnswer(idx);
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-sky-600 group-hover:text-white text-slate-700 font-bold text-sm flex items-center justify-center flex-shrink-0 transition">
+                        ${letters[idx]}
+                    </span>
+                    <span class="text-sm sm:text-base text-slate-700 font-medium pt-0.5 leading-snug">${optText}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function handleMCQAnswer(selectedIndex) {
+            if (gameState.answered) return;
+            gameState.answered = true;
+
+            const q = BANK_SOAL[gameState.currentIndex];
+            const isCorrect = selectedIndex === q.correctIndex;
+
+            // Styling tombol opsi
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`mcq-opt-${idx}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:border-sky-500', 'hover:bg-sky-50/50');
+                if (idx === q.correctIndex) {
+                    btn.classList.remove('border-slate-200');
+                    btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                    btn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-emerald-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0";
+                } else if (idx === selectedIndex && !isCorrect) {
+                    btn.classList.remove('border-slate-200');
+                    btn.classList.add('border-rose-500', 'bg-rose-50');
+                    btn.querySelector('span:first-child').className = "w-8 h-8 rounded-xl bg-rose-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0";
+                }
+            });
+
+            processScoreAndFeedback(isCorrect, q);
+        }
+
+        // 2. RENDER BENAR / SALAH
+        function renderTrueFalse(q, container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <button id="tf-btn-true" onclick="handleTrueFalseAnswer(true)" class="btn-game p-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100 text-emerald-900 font-game font-bold text-lg flex items-center justify-center gap-3 cursor-pointer">
+                        <i class="fa-solid fa-circle-check text-2xl text-emerald-600"></i>
+                        <span>BENAR</span>
+                    </button>
+                    <button id="tf-btn-false" onclick="handleTrueFalseAnswer(false)" class="btn-game p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/60 hover:bg-rose-100 text-rose-900 font-game font-bold text-lg flex items-center justify-center gap-3 cursor-pointer">
+                        <i class="fa-solid fa-circle-xmark text-2xl text-rose-600"></i>
+                        <span>SALAH</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        function handleTrueFalseAnswer(userBool) {
+            if (gameState.answered) return;
+            gameState.answered = true;
+
+            const q = BANK_SOAL[gameState.currentIndex];
+            const isCorrect = userBool === q.correctBool;
+
+            const btnTrue = document.getElementById('tf-btn-true');
+            const btnFalse = document.getElementById('tf-btn-false');
+            btnTrue.disabled = true;
+            btnFalse.disabled = true;
+
+            if (q.correctBool === true) {
+                btnTrue.classList.add('ring-4', 'ring-emerald-400', 'bg-emerald-200');
+                if (!isCorrect) btnFalse.classList.add('opacity-50', 'ring-4', 'ring-rose-400');
+            } else {
+                btnFalse.classList.add('ring-4', 'ring-emerald-400', 'bg-rose-200');
+                if (!isCorrect) btnTrue.classList.add('opacity-50', 'ring-4', 'ring-rose-400');
+            }
+
+            processScoreAndFeedback(isCorrect, q);
+        }
+
+        // 3. RENDER MENJODOHKAN (MATCHING PAIRS)
+        function renderMatching(q, container) {
+            gameState.matchingSelectedLeft = null;
+            gameState.matchingUserPairs = {};
+
+            // Acak urutan kolom kanan
+            const shuffledRight = q.pairs.map((p, idx) => ({ text: p.right, origIdx: idx }))
+                .sort(() => Math.random() - 0.5);
+            gameState.shuffledRightCache = shuffledRight;
+
+            container.innerHTML = `
+                <p class="text-xs text-slate-500 font-medium mb-3">
+                    <i class="fa-solid fa-hand-pointer text-sky-600"></i> Klik satu item di <strong>Kolom Kiri</strong>, lalu klik pasangannya yang sesuai di <strong>Kolom Kanan</strong>.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2.5" id="match-left-col">
+                        ${q.pairs.map((p, idx) => `
+                            <button id="match-left-${idx}" onclick="selectMatchLeft(${idx})" class="w-full text-left p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:border-indigo-400 transition text-sm font-bold text-slate-800 flex items-center justify-between gap-2 cursor-pointer">
+                                <span>${idx + 1}. ${p.left}</span>
+                                <span id="match-badge-left-${idx}" class="text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">Belum dipilih</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="space-y-2.5" id="match-right-col">
+                        ${shuffledRight.map((item, rIdx) => `
+                            <button id="match-right-${rIdx}" onclick="selectMatchRight(${rIdx}, ${item.origIdx})" class="w-full text-left p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-400 transition text-xs sm:text-sm text-slate-700 flex items-center justify-between gap-2 cursor-pointer">
+                                <span>${item.text}</span>
+                                <span id="match-badge-right-${rIdx}" class="hidden text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white flex-shrink-0"></span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            const submitWrap = document.getElementById('submit-custom-wrapper');
+            submitWrap.classList.remove('hidden');
+            const submitBtn = document.getElementById('btn-submit-custom');
+            submitBtn.disabled = true;
+        }
+
+        function selectMatchLeft(leftIdx) {
+            if (gameState.answered) return;
+            gameState.matchingSelectedLeft = leftIdx;
+
+            const q = BANK_SOAL[gameState.currentIndex];
+            q.pairs.forEach((_, idx) => {
+                const el = document.getElementById(`match-left-${idx}`);
+                if (idx === leftIdx) {
+                    el.classList.add('border-indigo-600', 'bg-indigo-50', 'ring-2', 'ring-indigo-300');
+                } else {
+                    el.classList.remove('border-indigo-600', 'bg-indigo-50', 'ring-2', 'ring-indigo-300');
+                }
+            });
+        }
+
+        function selectMatchRight(rightVisualIdx, rightOrigIdx) {
+            if (gameState.answered) return;
+            if (gameState.matchingSelectedLeft === null) {
+                // Beri petunjuk visual halus jika kiri belum diklik
+                const leftCol = document.getElementById('match-left-col');
+                leftCol.classList.add('animate-shake');
+                setTimeout(() => leftCol.classList.remove('animate-shake'), 350);
+                return;
+            }
+
+            const leftIdx = gameState.matchingSelectedLeft;
+
+            // Hapus pemetaan lama jika rightOrigIdx sudah dipakai oleh leftIdx lain
+            Object.keys(gameState.matchingUserPairs).forEach(k => {
+                if (gameState.matchingUserPairs[k].origIdx === rightOrigIdx) {
+                    delete gameState.matchingUserPairs[k];
+                }
+            });
+
+            gameState.matchingUserPairs[leftIdx] = {
+                visualIdx: rightVisualIdx,
+                origIdx: rightOrigIdx
+            };
+            gameState.matchingSelectedLeft = null;
+
+            refreshMatchingUI();
+        }
+
+        function refreshMatchingUI() {
+            const q = BANK_SOAL[gameState.currentIndex];
+            const pairColors = [
+                { bg: 'bg-sky-50', border: 'border-sky-500', badge: 'bg-sky-600 text-white' },
+                { bg: 'bg-amber-50', border: 'border-amber-500', badge: 'bg-amber-600 text-white' },
+                { bg: 'bg-purple-50', border: 'border-purple-500', badge: 'bg-purple-600 text-white' },
+                { bg: 'bg-teal-50', border: 'border-teal-500', badge: 'bg-teal-600 text-white' }
+            ];
+
+            // Reset semua tampilan kanan
+            gameState.shuffledRightCache.forEach((_, rIdx) => {
+                const rEl = document.getElementById(`match-right-${rIdx}`);
+                rEl.className = "w-full text-left p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-400 transition text-xs sm:text-sm text-slate-700 flex items-center justify-between gap-2 cursor-pointer";
+                const rBadge = document.getElementById(`match-badge-right-${rIdx}`);
+                rBadge.classList.add('hidden');
+            });
+
+            // Terapkan warna pasangan
+            q.pairs.forEach((_, lIdx) => {
+                const lEl = document.getElementById(`match-left-${lIdx}`);
+                const lBadge = document.getElementById(`match-badge-left-${lIdx}`);
+                lEl.classList.remove('ring-2', 'ring-indigo-300', 'border-indigo-600', 'bg-indigo-50');
+
+                const mapping = gameState.matchingUserPairs[lIdx];
+                if (mapping !== undefined) {
+                    const style = pairColors[lIdx % pairColors.length];
+                    lEl.className = `w-full text-left p-3.5 rounded-2xl border-2 ${style.border} ${style.bg} transition text-sm font-bold text-slate-800 flex items-center justify-between gap-2 cursor-pointer`;
+                    lBadge.className = `text-xs px-2.5 py-0.5 rounded-full font-bold ${style.badge}`;
+                    lBadge.textContent = `Pasangan #${lIdx + 1}`;
+
+                    const rEl = document.getElementById(`match-right-${mapping.visualIdx}`);
+                    rEl.className = `w-full text-left p-3.5 rounded-2xl border-2 ${style.border} ${style.bg} transition text-xs sm:text-sm text-slate-800 font-medium flex items-center justify-between gap-2 cursor-pointer`;
+                    const rBadge = document.getElementById(`match-badge-right-${mapping.visualIdx}`);
+                    rBadge.className = `text-xs font-bold px-2.5 py-0.5 rounded-full flex-shrink-0 ${style.badge}`;
+                    rBadge.textContent = `#${lIdx + 1}`;
+                } else {
+                    lEl.className = "w-full text-left p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:border-indigo-400 transition text-sm font-bold text-slate-800 flex items-center justify-between gap-2 cursor-pointer";
+                    lBadge.className = "text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-600";
+                    lBadge.textContent = "Belum dipilih";
+                }
+            });
+
+            // Aktifkan tombol Periksa jika semua 4 pasangan sudah terisi
+            const totalMatched = Object.keys(gameState.matchingUserPairs).length;
+            document.getElementById('btn-submit-custom').disabled = totalMatched < q.pairs.length;
+        }
+
+        // 4. RENDER TEKA-TEKI SUSUN KATA (WORD SCRAMBLE)
+        function renderScramble(q, container) {
+            const letters = q.targetWord.split('');
+            // Acak huruf (pastikan tidak langsung sama dengan jawaban)
+            let shuffled = [...letters].sort(() => Math.random() - 0.5);
+            if (shuffled.join('') === q.targetWord) {
+                shuffled.reverse();
+            }
+
+            gameState.scramblePool = shuffled;
+            gameState.scrambleSelectedLetters = [];
+
+            container.innerHTML = `
+                <div class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-indigo-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-key text-indigo-600"></i>
+                    <span><strong>Petunjuk:</strong> ${q.hint}</span>
+                </div>
+
+                <!-- Kotak Jawaban -->
+                <div class="mb-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Susunan Jawabanmu:</span>
+                        <button onclick="resetScrambleLetters()" id="btn-reset-scramble" class="text-xs font-bold text-rose-600 hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> Hapus Susunan
+                        </button>
+                    </div>
+                    <div id="scramble-slots" class="min-h-[60px] p-3 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-300 flex flex-wrap items-center justify-center gap-2">
+                        <!-- Slot huruf diisi dinamis -->
+                    </div>
+                </div>
+
+                <!-- Pilihan Huruf Acak -->
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2 text-center">Klik huruf di bawah untuk menyusun kata:</span>
+                    <div id="scramble-pool" class="flex flex-wrap items-center justify-center gap-2">
+                        <!-- Tombol huruf diisi dinamis -->
+                    </div>
+                </div>
+            `;
+
+            const submitWrap = document.getElementById('submit-custom-wrapper');
+            submitWrap.classList.remove('hidden');
+            document.getElementById('btn-submit-custom').disabled = true;
+
+            refreshScrambleUI();
+        }
+
+        function pickScrambleLetter(poolIdx) {
+            if (gameState.answered) return;
+            const alreadyUsed = gameState.scrambleSelectedLetters.some(item => item.poolIdx === poolIdx);
+            if (alreadyUsed) return;
+
+            gameState.scrambleSelectedLetters.push({
+                char: gameState.scramblePool[poolIdx],
+                poolIdx: poolIdx
+            });
+            refreshScrambleUI();
+        }
+
+        function removeScrambleLetter(selectedIdx) {
+            if (gameState.answered) return;
+            gameState.scrambleSelectedLetters.splice(selectedIdx, 1);
+            refreshScrambleUI();
+        }
+
+        function resetScrambleLetters() {
+            if (gameState.answered) return;
+            gameState.scrambleSelectedLetters = [];
+            refreshScrambleUI();
+        }
+
+        function refreshScrambleUI() {
+            const q = BANK_SOAL[gameState.currentIndex];
+            const slotsEl = document.getElementById('scramble-slots');
+            const poolEl = document.getElementById('scramble-pool');
+
+            // Render slot jawaban
+            let slotsHTML = "";
+            for (let i = 0; i < q.targetWord.length; i++) {
+                const picked = gameState.scrambleSelectedLetters[i];
+                if (picked) {
+                    slotsHTML += `
+                        <button onclick="removeScrambleLetter(${i})" class="w-10 h-11 sm:w-11 sm:h-12 rounded-xl bg-indigo-600 text-white font-game font-bold text-lg shadow-sm hover:bg-indigo-700 transition cursor-pointer">
+                            ${picked.char}
+                        </button>
+                    `;
+                } else {
+                    slotsHTML += `
+                        <div class="w-10 h-11 sm:w-11 sm:h-12 rounded-xl bg-white border border-slate-300 flex items-center justify-center text-slate-300 font-bold">
+                            _
+                        </div>
+                    `;
+                }
+            }
+            slotsEl.innerHTML = slotsHTML;
+
+            // Render pool huruf
+            poolEl.innerHTML = gameState.scramblePool.map((char, idx) => {
+                const isUsed = gameState.scrambleSelectedLetters.some(item => item.poolIdx === idx);
+                return `
+                    <button onclick="pickScrambleLetter(${idx})" ${isUsed ? 'disabled' : ''} 
+                        class="btn-game w-11 h-12 sm:w-12 sm:h-13 rounded-xl font-game font-bold text-lg border-2 transition cursor-pointer
+                        ${isUsed ? 'bg-slate-200 border-slate-200 text-slate-400 opacity-40' : 'bg-white border-sky-300 text-sky-900 hover:bg-sky-50'}">
+                        ${char}
+                    </button>
+                `;
+            }).join('');
+
+            // Aktifkan tombol cek jika semua huruf terisi
+            document.getElementById('btn-submit-custom').disabled = gameState.scrambleSelectedLetters.length < q.targetWord.length;
+        }
+
+        // CEK JAWABAN KHUSUS (MENJODOHKAN & TEKA-TEKI)
+        function checkCustomAnswer() {
+            if (gameState.answered) return;
+            gameState.answered = true;
+
+            const q = BANK_SOAL[gameState.currentIndex];
+            document.getElementById('submit-custom-wrapper').classList.add('hidden');
+
+            let isCorrect = false;
+            if (q.type === "matching") {
+                isCorrect = q.pairs.every((_, lIdx) => {
+                    const userPair = gameState.matchingUserPairs[lIdx];
+                    return userPair && userPair.origIdx === lIdx;
+                });
+            } else if (q.type === "scramble") {
+                const userWord = gameState.scrambleSelectedLetters.map(x => x.char).join('');
+                isCorrect = userWord === q.targetWord;
+                const btnReset = document.getElementById('btn-reset-scramble');
+                if (btnReset) btnReset.classList.add('hidden');
+            }
+
+            processScoreAndFeedback(isCorrect, q);
+        }
+
+        // ================= PROSES SKOR & UMPAN BALIK LANGSUNG =================
+        function processScoreAndFeedback(isCorrect, q) {
+            if (isCorrect) {
+                gameState.score += q.points;
+                gameState.categoryStats[q.category].earned += q.points;
+                updateNavbarStats();
+            }
+
+            const fbBox = document.getElementById('feedback-box');
+            const fbIcon = document.getElementById('feedback-icon');
+            const fbTitle = document.getElementById('feedback-title');
+            const fbExp = document.getElementById('feedback-explanation');
+
+            fbBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-400', 'bg-rose-50', 'border-rose-400');
+
+            if (isCorrect) {
+                fbBox.classList.add('bg-emerald-50', 'border-emerald-400');
+                fbIcon.className = "w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center flex-shrink-0 text-xl text-white";
+                fbIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                fbTitle.className = "font-game font-bold text-lg text-emerald-900";
+                fbTitle.textContent = `Luar Biasa! Jawaban Tepat (+${q.points} Poin)`;
+                fbExp.className = "text-sm mt-1 leading-relaxed text-emerald-800";
+            } else {
+                fbBox.classList.add('bg-rose-50', 'border-rose-400');
+                fbIcon.className = "w-10 h-10 rounded-xl bg-rose-600 flex items-center justify-center flex-shrink-0 text-xl text-white";
+                fbIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                fbTitle.className = "font-game font-bold text-lg text-rose-900";
+                fbTitle.textContent = "Kurang Tepat! Simak Penjelasannya:";
+                fbExp.className = "text-sm mt-1 leading-relaxed text-rose-800";
+            }
+
+            fbExp.textContent = q.explanation;
+
+            // Ubah teks tombol lanjut pada soal terakhir
+            const nextBtn = document.getElementById('btn-next-question');
+            if (gameState.currentIndex === BANK_SOAL.length - 1) {
+                nextBtn.innerHTML = '<span>Lihat Hasil Akhir</span> <i class="fa-solid fa-flag-checkered"></i>';
+            } else {
+                nextBtn.innerHTML = '<span>Lanjut</span> <i class="fa-solid fa-arrow-right"></i>';
+            }
+        }
+
+        // ================= NAVIGASI ANTAR SOAL & LEVEL =================
+        function nextQuestion() {
+            const currentQ = BANK_SOAL[gameState.currentIndex];
+            const nextIdx = gameState.currentIndex + 1;
+
+            if (nextIdx >= BANK_SOAL.length) {
+                showFinalResult();
+                return;
+            }
+
+            const nextQ = BANK_SOAL[nextIdx];
+            gameState.currentIndex = nextIdx;
+
+            // Cek apakah naik level
+            if (nextQ.level > currentQ.level) {
+                showLevelUpScreen(currentQ.level);
+            } else {
+                renderQuestion();
+            }
+        }
+
+        function showLevelUpScreen(completedLevel) {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-level-up').classList.remove('hidden');
+
+            document.getElementById('levelup-score').textContent = gameState.score;
+
+            if (completedLevel === 1) {
+                document.getElementById('levelup-title').textContent = "Hebat! Kamu Menuntaskan Level 1";
+                document.getElementById('levelup-desc').textContent = "Konsep dasar kemerdekaan berpendapat sebagai bagian dari HAM sudah kamu kuasai. Sekarang, uji pemahamanmu tentang pasal dan undang-undang di Level 2!";
+                document.getElementById('levelup-badge').textContent = "Duta Demokrasi Pemula";
+            } else if (completedLevel === 2) {
+                document.getElementById('levelup-title').textContent = "Mantap! Kamu Menuntaskan Level 2";
+                document.getElementById('levelup-desc').textContent = "Kamu telah mengenal landasan hukum UUD NRI Tahun 1945 dan peraturan terkait. Bersiaplah menghadapi tantangan terakhir: Analisis Studi Kasus HOTS di Level 3!";
+                document.getElementById('levelup-badge').textContent = "Pengawal Konstitusi Muda";
+            }
+        }
+
+        function continueToNextLevel() {
+            document.getElementById('screen-level-up').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        // ================= HALAMAN HASIL AKHIR & EVALUASI =================
+        function showFinalResult() {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('nav-stats').classList.add('hidden');
+            document.getElementById('nav-stats').classList.remove('flex');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            document.getElementById('result-player-name').textContent = gameState.playerName;
+            document.getElementById('result-final-score').textContent = gameState.score;
+
+            // Bintang & Lencana
+            const starsEl = document.getElementById('result-stars');
+            const badgeEl = document.getElementById('result-badge-title');
+            const recText = document.getElementById('recommendation-text');
+
+            if (gameState.score >= 85) {
+                starsEl.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>';
+                badgeEl.textContent = "Pelopor Demokrasi Digital";
+                recText.textContent = "Luar biasa! Kamu sudah sangat memahami makna kemerdekaan berpendapat sebagai bagian dari HAM, landasan hukumnya, serta penerapannya secara santun di era keterbukaan informasi. Terus terapkan prinsip 'Saring Sebelum Sharing' dan jadilah teladan berliterasi di sekolahmu!";
+            } else if (gameState.score >= 70) {
+                starsEl.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-white/40"></i>';
+                badgeEl.textContent = "Warga Negara Kritis";
+                recText.textContent = "Bagus sekali! Kamu sudah melampaui batas ketuntasan belajar. Perhatikan kembali indikator materi yang persentasenya masih di bawah 80% pada grafik di atas, terutama terkait rincian pasal UUD NRI Tahun 1945 dan UU No. 9 Tahun 1998.";
+            } else {
+                starsEl.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-white/40"></i><i class="fa-regular fa-star text-white/40"></i>';
+                badgeEl.textContent = "Sahabat Literasi (Perlu Latihan)";
+                recText.textContent = "Jangan menyerah! Baca kembali ringkasan materi pada Pasal 28E ayat (3), Pasal 28F, dan Pasal 28J ayat (2) UUD NRI Tahun 1945 serta UU No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik. Klik tombol 'Main Ulang' untuk meningkatkan skormu!";
+            }
+
+            // Rincian Penguasaan per Kompetensi
+            const breakdownEl = document.getElementById('mastery-breakdown');
+            breakdownEl.innerHTML = Object.values(gameState.categoryStats).map(cat => {
+                const pct = Math.round((cat.earned / cat.max) * 100);
+                let barColor = "bg-emerald-500";
+                let statusBadge = "Dikuasai";
+                let badgeClass = "bg-emerald-100 text-emerald-800";
+
+                if (pct < 60) {
+                    barColor = "bg-rose-500";
+                    statusBadge = "Perlu Latihan";
+                    badgeClass = "bg-rose-100 text-rose-800";
+                } else if (pct < 80) {
+                    barColor = "bg-amber-500";
+                    statusBadge = "Cukup Baik";
+                    badgeClass = "bg-amber-100 text-amber-800";
+                }
+
+                return `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <span class="text-xs sm:text-sm font-bold text-slate-800">${cat.label}</span>
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${badgeClass}">${statusBadge} (${pct}%)</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="${barColor} h-full rounded-full transition-all duration-700" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Salin Laporan Hasil Belajar ke Clipboard (menggunakan execCommand sesuai kompatibilitas iframe)
+        function copyResultSummary() {
+            const c = gameState.categoryStats;
+            const pKonsep = Math.round((c.konsep.earned / c.konsep.max) * 100);
+            const pHukum = Math.round((c.hukum.earned / c.hukum.max) * 100);
+            const pPenerapan = Math.round((c.penerapan.earned / c.penerapan.max) * 100);
+            const badge = document.getElementById('result-badge-title').textContent;
+
+            const reportText = 
+`=== LAPORAN HASIL GAME EDUKASI PANCASILA (KELAS IX) ===
+Materi: Kemerdekaan Berpendapat pada Era Keterbukaan Informasi
+Nama Siswa : ${gameState.playerName}
+Nilai Akhir: ${gameState.score} / 100
+Predikat   : ${badge}
+Rincian Penguasaan:
+- Konsep HAM & Keterbukaan Informasi: ${pKonsep}%
+- Landasan Hukum: ${pHukum}%
+- Studi Kasus Era Digital: ${pPenerapan}%
+======================================================`;
+
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = reportText;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+
+            const toast = document.getElementById('copy-toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 5000);
+        }
+    </script>
+</body>
+</html>
